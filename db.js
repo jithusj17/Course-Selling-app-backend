@@ -11,21 +11,21 @@ const { Schema } = mongoose
 
 const ObjectId = Schema.Types.ObjectId
 
-const userSchema = Schema({
+const userSchema = new Schema({
     email: { type: String, unique: true },
     password: String,
     firstName: String,
     lastName: String,
 })
 
-const adminSchema = Schema({
+const adminSchema = new Schema({
     email: { type: String, unique: true },
     password: String,
     firstName: String,
     lastName: String,
 })
 
-const courseSchema = Schema({
+const courseSchema = new Schema({
     title: String,
     description: String,
     price: Number,
@@ -33,7 +33,7 @@ const courseSchema = Schema({
     creatorId: ObjectId
 })
 
-const purchaseSchema = Schema({
+const purchaseSchema = new Schema({
     userId: ObjectId,
     courseId: ObjectId
 })
