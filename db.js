@@ -1,4 +1,13 @@
-const { Schema, default: mongoose } = require('mongoose')
+const mongoose = require('mongoose')
+
+
+
+//  MongoDB connection 
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => console.log("✅ MongoDB connected"))
+  .catch(err => console.log("❌ Error:", err))
+
+const { Schema } = mongoose
 
 const ObjectId = Schema.Types.ObjectId
 
@@ -29,12 +38,10 @@ const purchaseSchema = Schema({
     courseId: ObjectId
 })
 
-
 const userModel = mongoose.model("user", userSchema)
 const adminModel = mongoose.model("admin", adminSchema)
 const courseModel = mongoose.model("course", courseSchema)
 const purchaseModel = mongoose.model("purchase", purchaseSchema)
-
 
 module.exports = {
     userModel,
