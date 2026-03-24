@@ -4,8 +4,8 @@ const mongoose = require('mongoose')
 
 //  MongoDB connection 
 mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log("✅ MongoDB connected"))
-  .catch(err => console.log("❌ Error:", err))
+  .then(() => console.log(" MongoDB connected"))
+  .catch(err => console.log("Error:", err))
 
 const { Schema } = mongoose
 
