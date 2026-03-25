@@ -33,7 +33,7 @@ async function main() {
             console.log(` Server running on port ${PORT}`);
         });
     } catch (error) {
-        console.error("❌ Failed to connect to MongoDB on startup:", error.message);
+        console.error("Failed to connect to MongoDB on startup:", error.message);
         process.exit(1); // Stop the script if DB fails
     }
 }
