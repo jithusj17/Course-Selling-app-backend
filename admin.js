@@ -2,6 +2,7 @@ const { Router } = require("express");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 require('dotenv').config();
+import { adminMiddleware } from "./middlewares/admin";
 
 const adminRouter = Router();
 const { adminModel } = require("./db");
@@ -61,7 +62,7 @@ adminRouter.post("/signin", async function(req, res) {
     }
 });
 
-adminRouter.post("/course", function(req, res) {
+adminRouter.post("/course", adminMiddleware,function(req, res) {
     res.json({
         success: true,
         message: "Admin created course"
