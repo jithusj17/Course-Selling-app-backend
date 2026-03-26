@@ -2,20 +2,21 @@ const { Router } = require("express");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 require('dotenv').config();
-import { adminMiddleware } from "./middlewares/admin";
+
+
+const { adminMiddleware } = require("./middlewares/admin.js");
 
 const adminRouter = Router();
-const { adminModel } = require("./db");
 
+const { adminModel, courseModel } = require("./db"); 
 
 const ADMIN_SECRET = process.env.JWT_ADMIN_PASSWORD;
 
-// --- ADMIN SIGNUP ---
+//  ADMIN SIGNUP 
 adminRouter.post("/signup", async function(req, res) {
     const { email, password, firstName, lastName } = req.body;
 
     try {
-        // Hash the admin password
         const hashedPassword = await bcrypt.hash(password, 10);
         await adminModel.create({
             email: email,
@@ -24,18 +25,13 @@ adminRouter.post("/signup", async function(req, res) {
             lastName: lastName
         });
 
-        res.json({
-            message: "Admin Signup succeeded"
-        });
+        res.json({ message: "Admin Signup succeeded" });
     } catch (e) {
-        res.status(500).json({
-            message: "Signup failed",
-            error: e.message
-        });
+        res.status(500).json({ message: "Signup failed", error: e.message });
     }
 });
 
-// --- ADMIN SIGNIN ---
+//  ADMIN SIGNIN
 adminRouter.post("/signin", async function(req, res) {
     const { email, password } = req.body;
 
@@ -62,34 +58,37 @@ adminRouter.post("/signin", async function(req, res) {
     }
 });
 
+//  CREATE COURSE 
 adminRouter.post("/course", adminMiddleware, async function(req, res) {
-    const adminId = req.adminId;
+    const adminId = req.adminId; // Matches your middleware key
     const { title, description, imageUrl, price } = req.body;
-    const course = await courseModel.create({
-        title: title,
-        description: description,
-        imageUrl: imageUrl,
-        price: price,
-        creatorId: adminId 
-    });
+    
+    try {
+        const course = await courseModel.create({
+            title: title,
+            description: description,
+            imageUrl: imageUrl,
+            price: price,
+            creatorId: adminId 
+        });
 
-    res.json({
-        message: "Course created",
-        courseId: course._id
-    });
+        res.json({
+            message: "Course created",
+            courseId: course._id
+        });
+    } catch (e) {
+        res.status(500).json({ message: "Error creating course" });
+    }
 });
 
-
-
-// 2. UPDATE A COURSE
+//  UPDATE COURSE
 adminRouter.put("/course", adminMiddleware, async function(req, res) {
     const adminId = req.adminId;
     const { title, description, imageUrl, price, courseId } = req.body;
 
-   
     const result = await courseModel.updateOne({
-        _id: courseId,      // "Which course?"
-        creatorId: adminId  // "Do you own it?"
+        _id: courseId,
+        creatorId: adminId
     }, {
         title,
         description,
@@ -100,30 +99,26 @@ adminRouter.put("/course", adminMiddleware, async function(req, res) {
     if (result.matchedCount > 0) {
         res.json({ message: "Course updated successfully" });
     } else {
-        // If courseId is wrong OR if another admin tries to edit it
         res.status(403).json({ message: "Course not found or unauthorized" });
     }
 });
 
-
+// GET ALL MY COURSES 
 adminRouter.get("/course/bulk", adminMiddleware, async function(req, res) {
     const adminId = req.adminId;
 
-    const course = await courseModel.find({
+   
+    const courses = await courseModel.find({
         creatorId: adminId
     });
 
     res.json({
-        message: "Course updated",
-        courseId: course._id
-    })
-})
+        message: "Courses fetched successfully",
+        courses: courses // Send the list of courses
+    });
+});
+
 
 module.exports = {
     adminRouter: adminRouter
-}
-
-
-module.exports = {
-    adminRouter
-}
+};
