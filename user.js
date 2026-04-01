@@ -71,21 +71,16 @@ userRouter.post("/login", async function(req, res) {
 
 userRouter.get("/purchases", userMiddleware, async function (req, res) {
     const userId = req.userId;
-
     const purchases = await purchaseModel.find({ userId });
-
     const purchasedCourseIds = purchases.map(p => p.courseId);
-
     const coursesData = await courseModel.find({
         _id: { $in: purchasedCourseIds }
     });
-
     res.json({
         purchases,
         coursesData
     });
 });
-
 
 module.exports = {
     userRouter
