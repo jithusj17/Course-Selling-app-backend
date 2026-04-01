@@ -11,6 +11,7 @@ const { userRouter } = require("./user");
 
 // Middleware
 app.use(express.json());
+app.use(cors());
 
 // Routes
 app.use("/api/v1/course", courseRouter);

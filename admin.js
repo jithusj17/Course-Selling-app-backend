@@ -3,7 +3,6 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 require('dotenv').config();
 
-
 const { adminMiddleware } = require("./middlewares/admin.js");
 
 const adminRouter = Router();
@@ -14,20 +13,29 @@ const ADMIN_SECRET = process.env.JWT_ADMIN_PASSWORD;
 
 //  ADMIN SIGNUP 
 adminRouter.post("/signup", async function(req, res) {
+    console.log("1. Route Hit!");
     const { email, password, firstName, lastName } = req.body;
+    console.log("2. Data received:", { email, firstName, lastName });
 
     try {
+        console.log("3. Starting Bcrypt...");
         const hashedPassword = await bcrypt.hash(password, 10);
-        await adminModel.create({
-            email: email,
-            password: hashedPassword,
-            firstName: firstName,
-            lastName: lastName
-        });
+        console.log("4. Bcrypt Finished!");
 
-        res.json({ message: "Admin Signup succeeded" });
+        console.log("5. Touching Database...");
+        const result = await adminModel.create({
+            email,
+            password: hashedPassword,
+            firstName,
+            lastName
+        });
+        console.log("6. Database Success!", result._id);
+
+        return res.json({ message: "Signup worked!" });
+
     } catch (e) {
-        res.status(500).json({ message: "Signup failed", error: e.message });
+        console.log("!!! ERROR OCCURRED:", e.message);
+        return res.status(500).json({ error: e.message });
     }
 });
 
